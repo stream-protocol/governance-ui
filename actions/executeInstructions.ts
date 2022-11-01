@@ -7,12 +7,17 @@ import {
 } from '@solana/spl-governance'
 import { Transaction, TransactionInstruction } from '@solana/web3.js'
 import { sendSignedTransaction, signTransaction } from '@utils/send'
+import {
+  sendTransactionsV3,
+  SequenceType,
+  txBatchesToInstructionSetWithSigners,
+} from '@utils/sendTransactions'
 
-// Merge instructions within one Transaction, sign it and execute it
 export const executeInstructions = async (
   { connection, wallet, programId, programVersion }: RpcContext,
   proposal: ProgramAccount<Proposal>,
-  proposalInstructions: ProgramAccount<ProposalTransaction>[]
+  proposalInstructions: ProgramAccount<ProposalTransaction>[],
+  multiTransactionMode = false
 ) => {
   const instructions: TransactionInstruction[] = []
 
@@ -31,21 +36,39 @@ export const executeInstructions = async (
     )
   )
 
-  const transaction = new Transaction()
+  if (multiTransactionMode) {
+    const txes = [...instructions.map((x) => [x])].map((txBatch, batchIdx) => {
+      return {
+        instructionsSet: txBatchesToInstructionSetWithSigners(
+          txBatch,
+          [],
+          batchIdx
+        ),
+        sequenceType: SequenceType.Sequential,
+      }
+    })
 
-  transaction.add(...instructions)
+    await sendTransactionsV3({
+      connection,
+      wallet,
+      transactionInstructions: txes,
+    })
+  } else {
+    const transaction = new Transaction()
 
-  const signedTransaction = await signTransaction({
-    transaction,
-    wallet,
-    connection,
-    signers: [],
-  })
+    transaction.add(...instructions)
+    const signedTransaction = await signTransaction({
+      transaction,
+      wallet,
+      connection,
+      signers: [],
+    })
 
-  await sendSignedTransaction({
-    signedTransaction,
-    connection,
-    sendingMessage: 'Executing instruction',
-    successMessage: 'Execution finalized',
-  })
+    await sendSignedTransaction({
+      signedTransaction,
+      connection,
+      sendingMessage: 'Executing instruction',
+      successMessage: 'Execution finalized',
+    })
+  }
 }

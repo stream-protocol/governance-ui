@@ -18,10 +18,18 @@ import { VOTE_STAKE_REGISTRY_INSTRUCTIONS } from './programs/voteStakeRegistry'
 import { MARINADE_INSTRUCTIONS } from './programs/marinade'
 import { SOLEND_PROGRAM_INSTRUCTIONS } from './programs/solend'
 import { ATA_PROGRAM_INSTRUCTIONS } from './programs/associatedTokenAccount'
+import { STREAMFLOW_INSTRUCTIONS } from './programs/streamflow'
 import { governance as foresightGov } from '@foresight-tmp/foresight-sdk'
 import { ConnectionContext } from '@utils/connection'
 import { NFT_VOTER_INSTRUCTIONS } from './programs/nftVotingClient'
 import { PROGRAM_IDS } from '@castlefinance/vault-sdk'
+import { FORESIGHT_INSTRUCTIONS } from './programs/foresight'
+import { SAGA_PHONE } from './programs/SagaPhone'
+import { LIDO_INSTRUCTIONS } from './programs/lido'
+import { NAME_SERVICE_INSTRUCTIONS } from './programs/nameService'
+import { TOKEN_AUCTION_INSTRUCTIONS } from './programs/tokenAuction'
+import { VALIDATORDAO_INSTRUCTIONS } from './programs/validatordao'
+
 /**
  * Default governance program id instance
  */
@@ -48,6 +56,7 @@ export const ACCOUNT_NAMES = {
   '5tgfd6XgwiXB9otEnzFpXK11m7Q7yZUaAJzWK4oT5UGF':
     'Mango DAO SOL Treasury Vault',
   '9RGoboEjmaAjSCXsKi6p6zJucnwF3Eg5NUN9jPS6ziL3': 'Mango DAO MNGO Treasury',
+  '3r1tQ2qaR5teYPEyGoHwZeZfMU1zxD5FAAmtAJPbj9xX': 'Mango DAO Opinion Voting',
   '4PdEyhrV3gaUj4ffwjKGXBLo42jF2CQCCBoXenwCRWXf':
     'Mango DAO USDC Treasury Vault',
   '65u1A86RC2U6whcHeD2mRG1tXCSmH2GsiktmEFQmzZgq': 'Mango DAO USDC Treasury',
@@ -65,8 +74,10 @@ export const ACCOUNT_NAMES = {
     'Mango v3 BTC-PERP Incentive Vault',
   '7Gm5zF6FNJpyhqdwKcEdMQw3r5YzitYUGVDKYMPT1cMy': 'Mango V3 Admin Key',
   MangoCzJ36AjZyKwVj3VnYU4GTonjfVEnJmvvWaxLac: 'MNGO Token Mint',
-  H7uqouPsJkeEiLpCEoC1qYVVquDrZan6ZfdPK2gS44zm: 'FORE Token Mint',
+  H7uqouPsJkeEiLpCEoC1qYVVquDrZan6ZfdPK2gS44zm: 'FORE Devnet Token Mint',
+  '4ahVJVavHM8DZCtjX6YuKSTFx6KJwRPmVCJtjdQYdUU7': 'FORE Mainnet Token Mint',
   [foresightGov.DEVNET_TREASURY.toBase58()]: 'Foresight Devnet Governance',
+  [foresightGov.MAINNET_TREASURY.toBase58()]: 'Foresight Mainnet Governance',
   EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v: 'USDC Token Mint',
 
   MyHd6a7HWKTMeJMHBkrbMq4hZwZxwn9x7dxXcopQ4Wd: 'OMH Token',
@@ -137,6 +148,31 @@ export const ACCOUNT_NAMES = {
   '2fEL6au59KfmtarX5cJD4a6EaxRr6gLBvFkE65uEPJ4U': 'DAOJONES',
   FboFh3DkwmAeH4GyM5Ttd8ismd2wq6c8MrRkSsmr5nQW: 'LUNA',
   GnfeSuTwbXcxVnuXJTzx172174PJAHUfXpNgsBdGCncd: 'Solend Holdings',
+
+  // Jungle DeFi Community DAO
+  Ebuwy24prHRL3QEAT911wWD8aa493ikZeH7LfYzMQxS1: 'Incoming Protocol Fees/Assets',
+  '8jEtEwEYrFyNnHkvEC4xn2GeMKz5rpCtaxovdnD335xD': 'RAY Fee Wallet',
+  Gf6zQBC5nYs53KcuTsvPUx6i39eTDt5GoALuvJged6Wt: 'USDC Fee Wallet',
+  '2yCZaxgH1Y5P1aXRhe4XfKaL2roRzdDn5dJE67UgJx72': 'stSOL Fee Wallet',
+  Crq4ztCBzga78n1KusfiE2HsExGoPUGoHCgXkVSwwsrG: 'I-JFI-Q4/USDC POL',
+  '893e6nmHcgrf3wyxhKGMy8wGNBNLU9Eev7yVRapo7jcP': 'JFI/USDC POL',
+  '9BJQmMEke66pNEgwNB7M8s7WkMwLJFidUPujc1Xjdwjj': 'I-RAY-Q4/USDC POL',
+  '2dFDdEow6sX6jeJKdVoBfiPWjcMDUAYxCsHmk64JZGuy': 'JFI Fee Wallet',
+  '5HfKKTngUFzbdRJufnjZJnBpRsWqRj1jJgwouxgQituB': 'BTC Fee Wallet',
+  HEpRCwvshWL4zUo35SEPRxYy2ZCEACHLzdHbuv9Q9Gtg: 'USH Fee Wallet',
+  HEw5YMeF9ogZDSeRtz7btvE5BF9x53Pq9Cya83GZHR2D: 'mSOL Fee Wallet',
+  F9uzuZ46wMxxYZmg4baegfocoSWBX8YDNhqM5HrG6t87: 'USDH Fee Wallet',
+  '9uYzWw9rT9EMANe5yHKAsQfCKZP7Hjj46Pp1vmGz1K5s': 'USDT Fee Wallet',
+  gE8dBQZJze8zzCxb7iRiiHAvwv68t4vzBJsUMrWUPtx: 'ETH Fee Wallet',
+  CP8CMdBczN4GYjm3ygrVGhfU1HwnPxxcmWjPCkwihM74: 'Emission and Expense Reserves',
+  Hd65UxhS8sagMyQP3gU1E7N8xsTcQYM7Vpi2gZAMTDE7: 'JFI Reserves',
+  '4R1emrnFsWzgawRSN6QFKUTEGG5ZPmE2qDLXgZYMsCMv': 'USDC Reserves',
+  '3AtD8oiBUWttbnNCpKk1enRoquN9V88Nv6Rn7ESHPWHa':
+    'DAO Instance Authority Governance',
+  jdaoDN37BrVRvxuXSeyR7xE5Z9CAoQApexGrQJbnj6V: 'Jungle DeFi Governance Program',
+
+  //Serum DAO
+  '5xinfvkvL5NZ6BG3cDtFdTbVuMutqGXkDBuhncfmzPr2': 'Serum SRM Grant Treasury',
 }
 
 // Blacklisted governances which should not be displayed in the UI
@@ -148,12 +184,25 @@ export const HIDDEN_GOVERNANCES = new Map<string, string>([
   ['56yqzBEr9BqDGjYPJz9G8LVQrbXsQM2t2Yq3Gk8S56d1', ''],
   ['4styeLGsBRpV4xKsCNMRPb94U7JN8ZXoXJTLZA5hdjo9', ''],
   ['CKWNNwtn5nbsGMkvtRwHDv4QTyoHMByKVd7Ypo2deNpc', ''],
+  ['G8JgCHfca7PehBwRp1Q91smJ9CXAd8K9e9CpfVjyD2MP', ''],
 ])
 
 // Blacklisted proposals which should not be displayed in the UI
 // TODO: Add this to on-chain metadata to Proposal account
 export const HIDDEN_PROPOSALS = new Map<string, string>([
   ['E8XgiVpDJgDf4XgBKjZnMs3S1K7cmibtbDqjw5aNobCZ', ''],
+  ['DrhhwYXaY4fvTBoQdNtgwEoTjuQswvDQLfVcgUXgP1Mx', ''],
+  ['CfbCUF7cn6UdWRsGPUUtj4CKMBL7qNCdF1WunED4gYA4', ''],
+  ['Hzv3N2KtVikNoXz6nH9AWvt7Y9Smn8bRQ2gnAeJDkhm1', ''],
+  ['FeFaHN8c3yokUxyJw3F475uegMUoYsYtr4J2DMaS6JZh', ''],
+  ['GqoMraqhfK7ezFiKexRVkbYwvCegs9dgFpXn2f7aeePT', ''],
+  ['CZnFphcs2UmbqppTEP5PkAAF4DqeyFr7fPQ2bunCey2J', ''],
+  ['8ptWWXgb2nLVuMgJ1ZgXJfRaBesBDkyzYarJvWNLECbG', ''],
+  ['7P3dtUTSvcQcjtJpZHZKEzrGvvHQdQGJrtKFLNAYHvpv', ''],
+  ['EVzN1pfZwniGuyp45ZASHo6rU4Z8xx5kWevzDauR8sWp', ''],
+  ['7P3dtUTSvcQcjtJpZHZKEzrGvvHQdQGJrtKFLNAYHvpv', ''],
+  ['H5TnbSBNFKJJwKea8tUj7ETcmhRHXQ1N9XCXBSD6Q9P1', ''],
+  ['GeMQWvFTasBoui11RqRzMtDPQ9b2BkMK8NzepWzvuXw3', ''],
 ])
 
 export const DEFAULT_NATIVE_SOL_MINT =
@@ -162,8 +211,9 @@ export const DEFAULT_NATIVE_SOL_MINT =
 export const DEFAULT_NFT_TREASURY_MINT =
   'GNFTm5rz1Kzvq94G7DJkcrEUnCypeQYf7Ya8arPoHWvw'
 
-export function getAccountName(accountPk: PublicKey) {
-  return ACCOUNT_NAMES[accountPk.toBase58()] ?? getProgramName(accountPk)
+export function getAccountName(accountPk: PublicKey | string) {
+  const key = typeof accountPk === 'string' ? accountPk : accountPk.toBase58()
+  return ACCOUNT_NAMES[key] ?? getProgramName(accountPk)
 }
 
 export const CHAT_PROGRAM_ID = new PublicKey(
@@ -239,11 +289,18 @@ export const INSTRUCTION_DESCRIPTORS = {
   ...MANGO_INSTRUCTIONS,
   ...RAYDIUM_INSTRUCTIONS,
   ...MARINADE_INSTRUCTIONS,
+  ...LIDO_INSTRUCTIONS,
   ...SOLEND_PROGRAM_INSTRUCTIONS,
+  ...FORESIGHT_INSTRUCTIONS,
   ...ATA_PROGRAM_INSTRUCTIONS,
   ...SYSTEM_INSTRUCTIONS,
   ...VOTE_STAKE_REGISTRY_INSTRUCTIONS,
   ...NFT_VOTER_INSTRUCTIONS,
+  ...STREAMFLOW_INSTRUCTIONS,
+  ...NAME_SERVICE_INSTRUCTIONS,
+  ...SAGA_PHONE,
+  ...TOKEN_AUCTION_INSTRUCTIONS,
+  ...VALIDATORDAO_INSTRUCTIONS,
 }
 
 export async function getInstructionDescriptor(

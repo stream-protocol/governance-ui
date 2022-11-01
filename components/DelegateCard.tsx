@@ -103,7 +103,8 @@ const DelegateCard = () => {
     const instructions: TransactionInstruction[] = []
     setLoading(true)
 
-    if (!realm || !realm?.account?.config?.councilMint || !wallet?.publicKey) {
+    if (!realm || !wallet?.publicKey) {
+      setLoading(false)
       return
     }
 
@@ -118,7 +119,7 @@ const DelegateCard = () => {
         realm.owner, // publicKey of program/programId
         programVersion, // program version of realm
         realm.pubkey, // realm public key
-        type === 'council'
+        type === 'council' && realm?.account?.config?.councilMint
           ? realm?.account?.config?.councilMint
           : realm.account.communityMint, // mint of governance token
         wallet?.publicKey, // governingTokenOwner (walletId) publicKey of tokenOwnerRecord of this wallet
@@ -136,6 +137,7 @@ const DelegateCard = () => {
       setLoading(false)
     } catch (error) {
       console.log('error', error)
+      setLoading(false)
     }
   }
 
@@ -280,7 +282,7 @@ const DelegateCard = () => {
       ) : (
         <div className="text-sm text-th-fgd-1 flex flex-row items-center justify-between mt-4">
           {wallet && wallet.publicKey
-            ? 'Gain a governance token for this realm to delegate'
+            ? 'Gain a governance token for this dao to delegate'
             : 'Connect wallet to delegate'}
         </div>
       )}

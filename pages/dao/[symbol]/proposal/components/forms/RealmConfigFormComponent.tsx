@@ -15,6 +15,7 @@ import InstructionForm, {
   InstructionInput,
   InstructionInputType,
 } from '../instructions/FormCreator'
+import { DISABLED_VOTER_WEIGHT } from '@tools/constants'
 
 export interface RealmConfigForm {
   governedAccount: AssetAccount | undefined
@@ -47,10 +48,14 @@ const RealmConfigFormComponent = ({
   const minCommunity = mint ? getMintMinAmountAsDecimal(mint) : 0
   const minCommunityTokensToCreateProposal =
     realm && mint
-      ? getMintDecimalAmount(
-          mint,
+      ? DISABLED_VOTER_WEIGHT.eq(
           realm.account.config.minCommunityTokensToCreateGovernance
         )
+        ? DISABLED_VOTER_WEIGHT
+        : getMintDecimalAmount(
+            mint,
+            realm.account.config.minCommunityTokensToCreateGovernance
+          )
       : new BigNumber(0)
 
   const currentPrecision = precision(minCommunity)
@@ -103,7 +108,7 @@ const RealmConfigFormComponent = ({
       label: 'Min community tokens to create governance',
       initialValue: minCommunityTokensToCreateProposal,
       name: 'minCommunityTokensToCreateGovernance',
-      type: InstructionInputType.INPUT,
+      type: InstructionInputType.DISABLEABLE_INPUT,
       inputType: 'number',
       min: minCommunity,
       step: minCommunity,
@@ -131,7 +136,8 @@ const RealmConfigFormComponent = ({
     {
       label: 'Community voter weight addin',
       initialValue:
-        config?.account?.communityVoterWeightAddin?.toBase58() || '',
+        config?.account?.communityTokenConfig.voterWeightAddin?.toBase58() ||
+        '',
       name: 'communityVoterWeightAddin',
       type: InstructionInputType.INPUT,
       inputType: 'text',
@@ -140,7 +146,8 @@ const RealmConfigFormComponent = ({
     {
       label: 'Community max voter weight addin',
       initialValue:
-        config?.account?.maxCommunityVoterWeightAddin?.toBase58() || '',
+        config?.account?.communityTokenConfig.maxVoterWeightAddin?.toBase58() ||
+        '',
       name: 'maxCommunityVoterWeightAddin',
       type: InstructionInputType.INPUT,
       inputType: 'text',

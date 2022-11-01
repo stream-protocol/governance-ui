@@ -1,4 +1,4 @@
-import { getRealms, PROGRAM_VERSION_V1, Realm } from '@solana/spl-governance'
+import { PROGRAM_VERSION_V1, Realm, getRealms } from '@solana/spl-governance'
 
 import { ProgramAccount } from '@solana/spl-governance'
 import { PublicKey } from '@solana/web3.js'
@@ -39,6 +39,8 @@ export interface RealmInfo {
   // The default shared wallet of the DAO displayed on the home page
   // It's used for crowdfunding DAOs like  Ukraine.SOL or #Unchain_Ukraine
   sharedWalletId?: PublicKey
+
+  communityMint?: PublicKey
 }
 
 export function getProgramVersionForRealm(realmInfo: RealmInfo) {
@@ -49,12 +51,13 @@ export function getProgramVersionForRealm(realmInfo: RealmInfo) {
 interface RealmInfoAsJSON
   extends Omit<
     RealmInfo,
-    'programId' | 'realmId' | 'isCertified' | 'sharedWalletId'
+    'programId' | 'realmId' | 'isCertified' | 'sharedWalletId' | 'communityMint'
   > {
   enableNotifi?: boolean
   programId: string
   realmId: string
   sharedWalletId?: string
+  communityMint?: string
 }
 
 // TODO: Once governance program clones registry program and governance
@@ -71,6 +74,7 @@ function parseCertifiedRealms(realms: RealmInfoAsJSON[]) {
     isCertified: true,
     programVersion: realm.programVersion,
     enableNotifi: realm.enableNotifi ?? true, // enable by default
+    communityMint: realm.communityMint && new PublicKey(realm.communityMint),
   })) as ReadonlyArray<RealmInfo>
 }
 
@@ -105,7 +109,7 @@ export function getCertifiedRealmInfo(
 // If they keep getting added we might want to use some pattern to exclude them
 
 // Other excluded ones are know test DAOs like Test 'Grape Test' for example
-
+//hidden realms
 const EXCLUDED_REALMS = new Map<string, string>([
   ['HtV3PXqDhuPoCTDfYhaWxrs5e7oYk96zYpiWSrWCj6FC', ''],
   ['3mBJhp6w7Sqi6JhbnNvV6yi3RHDveUGsmzeyWprBFBWB', ''],
@@ -156,22 +160,23 @@ const EXCLUDED_REALMS = new Map<string, string>([
   ['DkSvNgykZPPFczhJVh8HDkhz25ByrDoPcB32q75AYu9k', ''], // UXDProtocolDAO test
   ['CvAD2XnHuJCzTyqRRHZtqRigVw11i9CDH8ACRGQpxhuf', ''], // Savana Sins Club
   ['AxuK6ZGEQS2vrLXwJeK5pZFBAAPamEUyQXptfEEnCHuD', ''],
+  ['24pZ9VkpRGTH6wHqjSsySYHpxAKbQL1Tczb6b7zytomZ', ''],
+  ['2HpvQJNTXgso4HWTXamiRAXshRyGu4ZhJ5esDT3tHPUV', ''], // Epics DAO (Dead because of loosing vote power)
+  ['Hd7hrf1fyZN5ZkuCerpfXs4UCAgoHELyiscE4utaKhSx', ''],
 ])
 
 // Returns all known realms from all known spl-gov instances which are not certified
 export async function getUnchartedRealmInfos(connection: ConnectionContext) {
   const certifiedRealms = getCertifiedRealmInfos(connection)
+  const programIds = arrayToUnique(certifiedRealms, (r) =>
+    r.programId.toBase58()
+  ).map((p) => {
+    return p.programId
+  })
 
   const allRealms = (
-    await Promise.all(
-      // Assuming all the known spl-gov instances are already included in the certified realms list
-      arrayToUnique(certifiedRealms, (r) => r.programId.toBase58()).map((p) => {
-        return getRealms(connection.current, p.programId)
-      })
-    )
-  )
-    .flatMap((r) => Object.values(r))
-    .sort((r1, r2) => r1.account.name.localeCompare(r2.account.name))
+    await getRealms(connection.current, programIds)
+  ).sort((r1, r2) => r1.account.name.localeCompare(r2.account.name))
 
   const excludedRealms = arrayToMap(certifiedRealms, (r) =>
     r.realmId.toBase58()
