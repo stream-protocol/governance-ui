@@ -4,6 +4,8 @@ import dynamic from 'next/dynamic'
 import React, { useEffect } from 'react'
 import Head from 'next/head'
 import Script from 'next/script'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { useRouter } from 'next/router'
 
 import { GatewayProvider } from '@components/Gateway/GatewayProvider'
 import { usePrevious } from '@hooks/usePrevious'
@@ -13,7 +15,7 @@ import handleGovernanceAssetsStore from '@hooks/handleGovernanceAssetsStore'
 import handleRouterHistory from '@hooks/handleRouterHistory'
 import NavBar from '@components/NavBar'
 import PageBodyContainer from '@components/PageBodyContainer'
-import tokenService from '@utils/services/token'
+import tokenPriceService from '@utils/services/tokenPrice'
 import TransactionLoader from '@components/TransactionLoader'
 import useDepositStore from 'VoteStakeRegistry/stores/useDepositStore'
 import useGovernanceAssets from '@hooks/useGovernanceAssets'
@@ -23,10 +25,12 @@ import useMembers from '@components/Members/useMembers'
 import useRealm from '@hooks/useRealm'
 import useTreasuryAccountStore from 'stores/useTreasuryAccountStore'
 import useVotePluginsClientStore from 'stores/useVotePluginsClientStore'
-import useWallet from '@hooks/useWallet'
 import useWalletStore from 'stores/useWalletStore'
 import NftVotingCountingModal from '@components/NftVotingCountingModal'
 import { getResourcePathPart } from '@tools/core/resources'
+import useInitWallet from '@hooks/useInitWallet'
+import queryClient from '@hooks/queries/queryClient'
+import useSerumGovStore from 'stores/useSerumGovStore'
 
 const Notifications = dynamic(() => import('../components/Notification'), {
   ssr: false,
@@ -58,13 +62,13 @@ interface Props {
 
 export function App(props: Props) {
   useHydrateStore()
-  useWallet()
+  useInitWallet()
   handleRouterHistory()
   useVotingPlugins()
   handleGovernanceAssetsStore()
   useMembers()
   useEffect(() => {
-    tokenService.fetchSolanaTokenList()
+    tokenPriceService.fetchSolanaTokenList()
   }, [])
   const { loadMarket } = useMarketStore()
   const { governedTokenAccounts } = useGovernanceAssets()
@@ -80,6 +84,12 @@ export function App(props: Props) {
   const prevStringifyPossibleNftsAccounts = usePrevious(
     JSON.stringify(possibleNftsAccounts)
   )
+  const router = useRouter()
+  const { cluster } = router.query
+  const updateSerumGovAccounts = useSerumGovStore(
+    (s) => s.actions.updateSerumGovAccounts
+  )
+
   const realmName = realmInfo?.displayName ?? realm?.account?.name
   const title = realmName ? `${realmName}` : 'Realms'
 
@@ -96,6 +106,7 @@ export function App(props: Props) {
     if (realm?.pubkey) {
       loadMarket(connection, connection.cluster)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO please fix, it can cause difficult bugs. You might wanna check out https://bobbyhadz.com/blog/react-hooks-exhaustive-deps for info. -@asktree
   }, [connection.cluster, realm?.pubkey.toBase58()])
   useEffect(() => {
     if (
@@ -119,10 +130,14 @@ export function App(props: Props) {
     } else if (!wallet?.connected || !ownTokenRecord) {
       resetDepositState()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO please fix, it can cause difficult bugs. You might wanna check out https://bobbyhadz.com/blog/react-hooks-exhaustive-deps for info. -@asktree
   }, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO please fix, it can cause difficult bugs. You might wanna check out https://bobbyhadz.com/blog/react-hooks-exhaustive-deps for info. -@asktree
     realm?.pubkey.toBase58(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO please fix, it can cause difficult bugs. You might wanna check out https://bobbyhadz.com/blog/react-hooks-exhaustive-deps for info. -@asktree
     ownTokenRecord?.pubkey.toBase58(),
     wallet?.connected,
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO please fix, it can cause difficult bugs. You might wanna check out https://bobbyhadz.com/blog/react-hooks-exhaustive-deps for info. -@asktree
     client?.program.programId.toBase58(),
   ])
 
@@ -134,7 +149,13 @@ export function App(props: Props) {
     ) {
       getNfts(possibleNftsAccounts, connection)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO please fix, it can cause difficult bugs. You might wanna check out https://bobbyhadz.com/blog/react-hooks-exhaustive-deps for info. -@asktree
   }, [JSON.stringify(possibleNftsAccounts), realm?.pubkey.toBase58()])
+
+  useEffect(() => {
+    updateSerumGovAccounts(cluster as string | undefined)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO please fix, it can cause difficult bugs. You might wanna check out https://bobbyhadz.com/blog/react-hooks-exhaustive-deps for info. -@asktree
+  }, [cluster])
 
   return (
     <div className="relative bg-bkg-1 text-fgd-1">
@@ -226,17 +247,19 @@ export function App(props: Props) {
       </Head>
       <GoogleTag />
       <ErrorBoundary>
-        <ThemeProvider defaultTheme="Dark">
-          <WalletIdentityProvider appName={'Realms'}>
-            <GatewayProvider>
-              <NavBar />
-              <Notifications />
-              <TransactionLoader></TransactionLoader>
-              <NftVotingCountingModal />
-              <PageBodyContainer>{props.children}</PageBodyContainer>
-            </GatewayProvider>
-          </WalletIdentityProvider>
-        </ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider defaultTheme="Dark">
+            <WalletIdentityProvider appName={'Realms'}>
+              <GatewayProvider>
+                <NavBar />
+                <Notifications />
+                <TransactionLoader></TransactionLoader>
+                <NftVotingCountingModal />
+                <PageBodyContainer>{props.children}</PageBodyContainer>
+              </GatewayProvider>
+            </WalletIdentityProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
       </ErrorBoundary>
     </div>
   )

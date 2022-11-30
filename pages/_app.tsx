@@ -7,18 +7,18 @@ import { App as HubApp } from '@hub/App'
 import '../styles/index.css'
 import '../styles/typography.css'
 import '@hub/components/controls/RichTextEditor/index.css'
-import { useEffect } from 'react'
-import useSerumGovStore from 'stores/useSerumGovStore'
+import '../components/DropdownMenu/index.css'
 
 export default function App({ Component, pageProps, router }: AppProps) {
-  const { cluster } = router.query
-  const updateSerumGovAccounts = useSerumGovStore(
-    (s) => s.actions.updateSerumGovAccounts
-  )
+  // **NOTE**
+  // Do not perform any data fetches or insert/attaach any providers in this
+  // component. This component is for routing between the sub-apps ONLY. Add
+  // the providers and perform data fetches in the relevant sub-apps (`HubApp`,
+  // `BaseApp`) instead.
 
-  useEffect(() => {
-    updateSerumGovAccounts(cluster as string | undefined)
-  }, [cluster])
+  if (router.pathname.startsWith('/code')) {
+    return <Component {...pageProps} />
+  }
 
   if (
     router.pathname.startsWith('/realm/[id]') ||

@@ -33,11 +33,23 @@ export function LargeCard(props: Props) {
 
   return (
     <Link passHref href={`/realm/${props.urlId}/hub`}>
-      <a className={cx('block', 'overflow-hidden', 'rounded', props.className)}>
+      <a
+        className={cx(
+          'block',
+          'overflow-hidden',
+          'rounded',
+          'transition-transform',
+          'active:scale-95',
+          'md:active:scale-[.98]',
+          props.className,
+        )}
+      >
         <img className="w-full" src={props.imgSrc} />
         <div className="pt-3 px-6 pb-8">
           <header className="flex items-center justify-between">
-            <div className="font-bold text-neutral-900">{props.title}</div>
+            <div className="font-bold text-neutral-900 truncate">
+              {props.title}
+            </div>
             {pipe(
               result,
               RE.match(
@@ -59,7 +71,7 @@ export function LargeCard(props: Props) {
               ),
             )}
           </header>
-          <div className="mt-2 text-sm text-neutral-700 line-clamp-3">
+          <div className="mt-2 text-sm text-neutral-700 line-clamp-4 h-20">
             {props.content}
           </div>
           <div className="mt-6 grid grid-cols-3 items-center">

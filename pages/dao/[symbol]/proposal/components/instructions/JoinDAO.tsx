@@ -2,7 +2,6 @@ import Input from '@components/inputs/Input'
 import Select from '@components/inputs/Select'
 import useGovernanceAssets from '@hooks/useGovernanceAssets'
 import useRealmAccount from '@hooks/useRealmAccount'
-import useWallet from '@hooks/useWallet'
 import { getCertifiedRealmInfos, RealmInfo } from '@models/registry/api'
 import {
   getGovernanceProgramVersion,
@@ -37,7 +36,7 @@ const JoinDAO = ({
   //Small hack to prevent race conditions with cluster change until we remove connection from store and move it to global dep.
   const routeHasClusterInPath = router.asPath.includes('cluster')
 
-  const { wallet } = useWallet()
+  const { current: wallet } = useWalletStore()
   const connection = useWalletStore((s) => s.connection)
 
   const { governedSPLTokenAccounts } = useGovernanceAssets()
@@ -163,6 +162,7 @@ const JoinDAO = ({
       const realms = getCertifiedRealmInfos(connection)
       setCertifiedRealms(realms.filter((r) => !!r.communityMint))
     } else setCertifiedRealms([])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO please fix, it can cause difficult bugs. You might wanna check out https://bobbyhadz.com/blog/react-hooks-exhaustive-deps for info. -@asktree
   }, [connection.current.rpcEndpoint])
 
   // Update mint info when selected token account changes.
@@ -171,6 +171,7 @@ const JoinDAO = ({
       ...form,
       mintInfo: form.governedAccount?.extensions.mint?.account,
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO please fix, it can cause difficult bugs. You might wanna check out https://bobbyhadz.com/blog/react-hooks-exhaustive-deps for info. -@asktree
   }, [form.governedAccount])
 
   useEffect(() => {
@@ -181,6 +182,7 @@ const JoinDAO = ({
       },
       index
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO please fix, it can cause difficult bugs. You might wanna check out https://bobbyhadz.com/blog/react-hooks-exhaustive-deps for info. -@asktree
   }, [form])
 
   return (

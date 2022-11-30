@@ -27,7 +27,7 @@ import {
   ArrowCircleUpIcon,
   //   InformationCircleIcon,
 } from '@heroicons/react/solid'
-import tokenService from '@utils/services/token'
+import tokenPriceService from '@utils/services/tokenPrice'
 import BigNumber from 'bignumber.js'
 import { getInstructionDataFromBase64 } from '@solana/spl-governance'
 import useQueryContext from '@hooks/useQueryContext'
@@ -127,7 +127,7 @@ const SendTokens = ({
     })
   }
   const calcTransactionDolarAmount = (amount) => {
-    const price = tokenService.getUSDTokenPrice(
+    const price = tokenPriceService.getUSDTokenPrice(
       currentAccount!.extensions.mint!.publicKey.toBase58()
     )
     const totalPrice = amount * price
@@ -289,6 +289,7 @@ const SendTokens = ({
         propertyName: 'governedTokenAccount',
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO please fix, it can cause difficult bugs. You might wanna check out https://bobbyhadz.com/blog/react-hooks-exhaustive-deps for info. -@asktree
   }, [currentAccount])
   useEffect(() => {
     if (form.destinationAccount) {
@@ -304,6 +305,7 @@ const SendTokens = ({
     } else {
       setDestinationAccount(null)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO please fix, it can cause difficult bugs. You might wanna check out https://bobbyhadz.com/blog/react-hooks-exhaustive-deps for info. -@asktree
   }, [form.destinationAccount])
 
   const schema = getTokenTransferSchema({ form, connection, nftMode: isNft })

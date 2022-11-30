@@ -8,7 +8,6 @@ import { useHasVoteTimeExpired } from '@hooks/useHasVoteTimeExpired'
 import useQueryContext from '@hooks/useQueryContext'
 import useRealm from '@hooks/useRealm'
 import useRealmProposalVotes from '@hooks/useRealmProposalVotes'
-import useWallet from '@hooks/useWallet'
 import {
   getGovernanceProgramVersion,
   getInstructionDataFromBase64,
@@ -25,7 +24,6 @@ import {
 } from '@solana/spl-governance'
 import { PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js'
 import { notify } from '@utils/notifications'
-import { simulateTransaction } from '@utils/send'
 import { InstructionDataWithHoldUpTime } from 'actions/createProposal'
 import classNames from 'classnames'
 import Link from 'next/link'
@@ -150,7 +148,7 @@ export default function ProposalDetails({
   const { cluster } = router.query
 
   const { symbol } = useRealm()
-  const { wallet } = useWallet()
+  const { current: wallet } = useWalletStore()
   const connection = useWalletStore((s) => s.connection.current)
   const { fmtUrlWithCluster } = useQueryContext()
 
@@ -223,7 +221,7 @@ export default function ProposalDetails({
       const tx = new Transaction({ feePayer: wallet.publicKey }).add(
         ...instructions
       )
-      const simulated = await simulateTransaction(connection, tx, 'single')
+      const simulated = await connection.simulateTransaction(tx)
 
       if (simulated.value.err) {
         console.log('[SPL_GOV] simulated logs ', simulated.value.logs)

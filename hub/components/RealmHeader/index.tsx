@@ -1,5 +1,6 @@
 import AssemblyClusterIcon from '@carbon/icons-react/lib/AssemblyCluster';
 import EarthIcon from '@carbon/icons-react/lib/Earth';
+import EditIcon from '@carbon/icons-react/lib/Edit';
 import ListDropdownIcon from '@carbon/icons-react/lib/ListDropdown';
 import LogoDiscord from '@carbon/icons-react/lib/LogoDiscord';
 import LogoGithub from '@carbon/icons-react/lib/LogoGithub';
@@ -11,6 +12,7 @@ import ProgressBarRound from '@carbon/icons-react/lib/ProgressBarRound';
 import WalletIcon from '@carbon/icons-react/lib/Wallet';
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import type { PublicKey } from '@solana/web3.js';
+import Link from 'next/link';
 import { useMemo } from 'react';
 import { useMediaQuery } from 'react-responsive';
 
@@ -41,6 +43,7 @@ interface Props extends BaseProps {
     mint: PublicKey;
     symbol: string;
   };
+  userIsAdmin?: boolean;
   // external links
   discordUrl?: string | null;
   githubUrl?: string | null;
@@ -88,7 +91,7 @@ export function Content(props: Props) {
             'md:pl-48',
           )}
         >
-          <div className="relative overflow-visible -mx-4 md:-mx-2">
+          <div className="flex items-baseline relative overflow-visible -mx-4 md:-mx-2">
             <div
               className={cx(
                 'absolute',
@@ -104,6 +107,24 @@ export function Content(props: Props) {
             >
               {props.name}
             </div>
+            {props.userIsAdmin && (
+              <Link passHref href={`/realm/${props.realmUrlId}/hub/edit`}>
+                <a
+                  className={cx(
+                    'flex',
+                    'items-center',
+                    'ml-4',
+                    'text-neutral-500',
+                    'text-xs',
+                    'transition-colors',
+                    'hover:text-neutral-900',
+                  )}
+                >
+                  <EditIcon className="h-3 w-3 fill-current mr-1" />
+                  <div>edit info</div>
+                </a>
+              </Link>
+            )}
           </div>
           <div className="flex items-center">
             {props.token && (
@@ -135,6 +156,8 @@ export function Content(props: Props) {
             'space-x-0',
             'justify-between',
             'mt-16',
+            '-ml-2',
+            'sm:ml-0',
             'sm:space-x-2',
             'sm:justify-start',
             'sm:px-2',
@@ -145,7 +168,7 @@ export function Content(props: Props) {
           )}
         >
           <NavigationMenu.Root>
-            <NavigationMenu.List className="flex items-center md:space-x-3">
+            <NavigationMenu.List className="flex items-center sm:space-x-2 md:space-x-3">
               <Tab
                 href={`/realm/${props.realmUrlId}`}
                 icon={<ListDropdownIcon />}
@@ -292,26 +315,61 @@ export function Error(props: BaseProps) {
         <RealmHeaderIcon.Error
           className={cx('-translate-y-1/2', 'absolute', 'top-0')}
         />
-        <div className="pl-48 pt-4 pb-8 pr-4 flex items-center">
-          <div className="-mx-2">
+        <div
+          className={cx(
+            'flex',
+            'items-center',
+            'justify-between',
+            'pb-8',
+            'pl-4',
+            'pr-4',
+            'pt-4',
+            'md:pl-48',
+          )}
+        >
+          <div className="relative overflow-visible -mx-4 md:-mx-2">
             <div
               className={cx(
-                'font-semibold',
-                'text-neutral-900',
-                'text-3xl',
-                'w-48',
+                'absolute',
                 'bg-neutral-200',
+                'font-semibold',
                 'rounded',
+                'text-3xl',
+                'text-neutral-900',
+                'top-[52px]',
+                'whitespace-nowrap',
+                'w-48',
+                'md:relative',
+                'md:top-0',
+                'md:whitespace-normal',
               )}
             >
               &nbsp;
             </div>
           </div>
         </div>
-        <div className="mt-6 flex items-center justify-between px-2">
-          <div className="flex items-center space-x-3">
+        <div
+          className={cx(
+            'flex',
+            'items-center',
+            'space-x-0',
+            'justify-between',
+            'mt-16',
+            'sm:space-x-2',
+            'sm:justify-start',
+            'sm:px-2',
+            'md:mt-6',
+            'md:space-x-0',
+            'md:justify-between',
+            'md:px-2',
+          )}
+        >
+          <div className="flex items-center space-x-1 md:space-x-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div className="rounded bg-neutral-200 w-32 h-10" key={i} />
+              <div
+                className="rounded bg-neutral-200 w-24 md:w-32 h-10"
+                key={i}
+              />
             ))}
           </div>
         </div>
@@ -328,28 +386,59 @@ export function Loading(props: BaseProps) {
         <RealmHeaderIcon.Loading
           className={cx('-translate-y-1/2', 'absolute', 'top-0')}
         />
-        <div className="pl-48 pt-4 pb-8 pr-4 flex items-center">
-          <div className="-mx-2">
+        <div
+          className={cx(
+            'flex',
+            'items-center',
+            'justify-between',
+            'pb-8',
+            'pl-4',
+            'pr-4',
+            'pt-4',
+            'md:pl-48',
+          )}
+        >
+          <div className="relative overflow-visible -mx-4 md:-mx-2">
             <div
               className={cx(
-                'font-semibold',
-                'text-neutral-900',
-                'text-3xl',
-                'w-48',
+                'absolute',
                 'bg-neutral-200',
+                'font-semibold',
                 'rounded',
-                'animate-pulse',
+                'text-3xl',
+                'text-neutral-900',
+                'top-[52px]',
+                'whitespace-nowrap',
+                'w-48',
+                'md:relative',
+                'md:top-0',
+                'md:whitespace-normal',
               )}
             >
               &nbsp;
             </div>
           </div>
         </div>
-        <div className="mt-6 flex items-center justify-between px-2">
-          <div className="flex items-center space-x-3">
+        <div
+          className={cx(
+            'flex',
+            'items-center',
+            'space-x-0',
+            'justify-between',
+            'mt-16',
+            'sm:space-x-2',
+            'sm:justify-start',
+            'sm:px-2',
+            'md:mt-6',
+            'md:space-x-0',
+            'md:justify-between',
+            'md:px-2',
+          )}
+        >
+          <div className="flex items-center space-x-1 md:space-x-3">
             {Array.from({ length: 3 }).map((_, i) => (
               <div
-                className="rounded bg-neutral-200 w-32 h-10 animate-pulse"
+                className="rounded bg-neutral-200 w-24 md:w-32 h-10 animate-pulse"
                 key={i}
               />
             ))}

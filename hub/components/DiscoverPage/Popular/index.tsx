@@ -6,6 +6,15 @@ import cx from '@hub/lib/cx';
 
 export const ITEMS = [
   {
+    bannerImgSrc: 'https://i.imgur.com/hDJj3dL.png',
+    description:
+      'Magic Eden is the leading NFT platform for discovery, expression, and ownership across digital cultures.',
+    iconImgSrc: 'https://i.imgur.com/p9Ludt4.png',
+    name: 'Magic Eden',
+    publicKey: new PublicKey('9MwbgfEkV8ZaeycfciBqytcxwfdYHqD2NYjsTZkH4GxA'),
+    urlId: 'Magic%20Eden',
+  },
+  {
     bannerImgSrc: 'https://i.imgur.com/VfFjhk5.jpeg',
     description:
       'GARI Network enables everyone to monetize their social media time and activities by leveraging web3 technologies.',
@@ -15,31 +24,22 @@ export const ITEMS = [
     urlId: 'GARI%20Network',
   },
   {
-    bannerImgSrc: '/realms/RCH/banner.png',
+    bannerImgSrc: 'https://i.imgur.com/i1gGoIw.jpg',
     description:
-      'The standard for enabling modern communities to share ideas, make decisions, and collectively manage treasuries.',
-    iconImgSrc: '/realms/RCH/icon.png',
-    name: 'Realms Community Hub',
-    publicKey: new PublicKey('9efHuf3HAKiMDWNhgJyZW1Zyo8P7rRhAMXoJa9vpRo1e'),
-    urlId: 'RCH',
+      'Every market, all the power, none of the fuss. Simplifying decentralized finance through easy-to-use products and developer tools.',
+    iconImgSrc: 'https://trade.mango.markets/assets/icons/logo.svg',
+    name: 'Mango DAO',
+    publicKey: new PublicKey('DPiH3H3c7t47BMxqTxLsuPQpEC6Kne8GA9VXbxpnZxFE'),
+    urlId: 'MNGO',
   },
   {
-    bannerImgSrc: '/realms/RCH/banner.png',
+    bannerImgSrc: 'https://i.imgur.com/ZiHW6ho.png',
     description:
-      'The standard for enabling modern communities to share ideas, make decisions, and collectively manage treasuries.',
-    iconImgSrc: '/realms/RCH/icon.png',
-    name: 'Realms Community Hub',
-    publicKey: new PublicKey('9efHuf3HAKiMDWNhgJyZW1Zyo8P7rRhAMXoJa9vpRo1e'),
-    urlId: 'RCH',
-  },
-  {
-    bannerImgSrc: '/realms/RCH/banner.png',
-    description:
-      'The standard for enabling modern communities to share ideas, make decisions, and collectively manage treasuries.',
-    iconImgSrc: '/realms/RCH/icon.png',
-    name: 'Realms Community Hub',
-    publicKey: new PublicKey('9efHuf3HAKiMDWNhgJyZW1Zyo8P7rRhAMXoJa9vpRo1e'),
-    urlId: 'RCH',
+      'Hello Moon provides innovative datasets on Solana to empower NFT & DeFi investors & traders.',
+    iconImgSrc: 'https://www.hellomoon.io/Logo.svg',
+    name: 'Hello Moon',
+    publicKey: new PublicKey('G4CR3KUvqPZWmHbuvWhBPqL4vBBBujviyeTVynN2rhKB'),
+    urlId: 'Hello%20Moon',
   },
 ];
 
@@ -56,7 +56,7 @@ export function Popular(props: Props) {
           popular projects
         </div>
       </div>
-      <div className="text-neutral-500">Solana projects gaining momentum</div>
+      {/* <div className="text-neutral-500">Solana projects gaining momentum</div> */}
       <div
         className={cx(
           'grid',
