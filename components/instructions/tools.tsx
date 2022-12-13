@@ -30,17 +30,17 @@ import { NAME_SERVICE_INSTRUCTIONS } from './programs/nameService'
 import { TOKEN_AUCTION_INSTRUCTIONS } from './programs/tokenAuction'
 import { VALIDATORDAO_INSTRUCTIONS } from './programs/validatordao'
 
-/**
- * Default governance program id instance
- */
-export const DEFAULT_GOVERNANCE_PROGRAM_ID =
+export const V3_DEFAULT_GOVERNANCE_PROGRAM_ID =
+  '7e75Nwsz8i5i4NiDa43CNzKJ4AeQGyRimha46VKTM1Ls'
+
+export const V2_DEFAULT_GOVERNANCE_PROGRAM_ID =
   'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw'
 
 /**
- * Default TEST governance program id instance
+ * Default governance program id instance
  */
-export const DEFAULT_TEST_GOVERNANCE_PROGRAM_ID =
-  'GTesTBiEWE32WHXXE2S4XbZvA5CrEc4xs6ZgRe895dP'
+export const DEFAULT_GOVERNANCE_PROGRAM_ID = V2_DEFAULT_GOVERNANCE_PROGRAM_ID
+export const DEFAULT_GOVERNANCE_PROGRAM_VERSION = 2
 
 export const MANGO_DAO_TREASURY = '9RGoboEjmaAjSCXsKi6p6zJucnwF3Eg5NUN9jPS6ziL3'
 
